@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -17,13 +17,7 @@ export default function ReportDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (session && params.id) {
-      fetchReport();
-    }
-  }, [session, params.id]);
-
-  const fetchReport = async () => {
+  const fetchReport = useCallback(async () => {
     try {
       const response = await fetch(`/api/reports/${params.id}`);
       if (response.ok) {
@@ -37,7 +31,13 @@ export default function ReportDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (session && params.id) {
+      fetchReport();
+    }
+  }, [session, params.id, fetchReport]);
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this report?')) return;

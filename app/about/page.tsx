@@ -32,12 +32,12 @@ export default function AboutPage() {
           >
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Mission</h2>
             <p className="text-gray-700 text-lg leading-relaxed mb-4">
-              DataVision was born from the belief that powerful data analysis shouldn't be
-              limited to data scientists. We're on a mission to democratize data insights,
+              DataVision was born from the belief that powerful data analysis shouldn&apos;t be
+              limited to data scientists. We&apos;re on a mission to democratize data insights,
               making it easy for anyone to transform their data into actionable intelligence.
             </p>
             <p className="text-gray-700 text-lg leading-relaxed">
-              Whether you're a small business owner analyzing sales data, a researcher
+              Whether you&apos;re a small business owner analyzing sales data, a researcher
               working with survey results, or a student exploring datasets, DataVision
               empowers you to unlock the stories hidden in your data.
             </p>

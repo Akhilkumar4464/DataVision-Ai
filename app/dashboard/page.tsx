@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -38,19 +38,7 @@ export default function DashboardPage() {
     }
   }, [status, router]);
 
-  useEffect(() => {
-    if (session) {
-      fetchReports();
-    }
-  }, [session]);
-
-  useEffect(() => {
-    if (parsedData && xColumn && yColumn) {
-      prepareChartData();
-    }
-  }, [parsedData, xColumn, yColumn, selectedChartType]);
-
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     try {
       const response = await fetch('/api/reports');
       if (response.ok) {
@@ -60,9 +48,15 @@ export default function DashboardPage() {
     } catch (err) {
       console.error('Error fetching reports:', err);
     }
-  };
+  }, []);
 
-  const prepareChartData = () => {
+  useEffect(() => {
+    if (session) {
+      fetchReports();
+    }
+  }, [session, fetchReports]);
+
+  const prepareChartData = useCallback(() => {
     if (!parsedData) return;
 
     const xIndex = parsedData.columns.indexOf(xColumn);
@@ -101,7 +95,7 @@ export default function DashboardPage() {
     }
 
     setChartData(data);
-  };
+  }, [parsedData, xColumn, yColumn, selectedChartType]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
