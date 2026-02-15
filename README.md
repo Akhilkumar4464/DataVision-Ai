@@ -1,6 +1,7 @@
 # DataVision
 
-**DataVision** is a production-ready web application for AI-powered data analysis and visualization. Upload Excel, CSV, PDF, or DOCX files and get instant insights, beautiful visualizations, and exportable reports.
+**DataVision** is a production-ready web application for AI-powered data analysis and visualization. Upload Excel, CSV, PDF, or DOCX files and get instant insights, beautiful visualizations, and exportable reports.⚠ Originally developed during my tenure at Zidio Development (Aug–Sept 2025).
+Repository was recreated after local data loss.
 
 ## Features
 
