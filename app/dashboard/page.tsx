@@ -97,7 +97,12 @@ export default function DashboardPage() {
     setChartData(data);
   }, [parsedData, xColumn, yColumn, selectedChartType]);
 
+  useEffect(() => {
+    prepareChartData();
+  }, [prepareChartData]);
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+
     const file = e.target.files?.[0];
     if (!file) return;
 
