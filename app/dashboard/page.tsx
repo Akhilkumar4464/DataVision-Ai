@@ -31,6 +31,7 @@ export default function DashboardPage() {
   const [chartData, setChartData] = useState<any[]>([]);
   const [savedReports, setSavedReports] = useState<any[]>([]);
   const [reportTitle, setReportTitle] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -191,30 +192,50 @@ export default function DashboardPage() {
   };
 
   const handleSaveReport = async () => {
-    if (!parsedData || !insights || !report || !session) return;
+    if (!parsedData || !insights || !report) {
+      alert('Please upload and analyze a dataset first.');
+      return;
+    }
 
+    if (!session) {
+      alert('Please sign in to save your reports.');
+      router.push('/auth/signin');
+      return;
+    }
+
+    setSaving(true);
     try {
+      const fileName = parsedData.metadata?.fileName || 'report.csv';
+      const fileExt = fileName.split('.').pop()?.toLowerCase() || 'csv';
+      const fileType = parsedData.metadata?.fileType || fileExt;
+      const title = reportTitle.trim() || report.title || fileName || 'Untitled Report';
+
       const response = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: reportTitle || parsedData.metadata?.fileName || 'Untitled Report',
-          fileName: parsedData.metadata?.fileName || 'unknown',
-          fileType: parsedData.metadata?.fileType || 'unknown',
+          title,
+          fileName,
+          fileType,
           data: parsedData,
           insights,
           charts: [{ type: selectedChartType, data: chartData }],
         }),
       });
 
+      const resData = await response.json();
+
       if (response.ok) {
         await fetchReports();
-        alert('Report saved successfully!');
+        alert('✅ Report saved successfully!');
       } else {
-        throw new Error('Failed to save report');
+        throw new Error(resData.error || 'Failed to save report');
       }
-    } catch (err) {
-      alert('Error saving report');
+    } catch (err: any) {
+      console.error('Save report error:', err);
+      alert(`❌ Error saving report: ${err.message || 'Unknown error'}`);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -484,10 +505,11 @@ export default function DashboardPage() {
                 <div className="flex gap-4">
                   <button
                     onClick={handleSaveReport}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                    disabled={saving}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    Save Report
+                    {saving ? 'Saving...' : 'Save Report'}
                   </button>
                   <button
                     onClick={() => report && exportReportAsPDF(report)}

@@ -42,7 +42,7 @@ async function parsePDF(buffer: Buffer, fileName: string): Promise<ParsedData> {
       rows,
       metadata: {
         fileName,
-        fileType: 'application/pdf',
+        fileType: 'pdf',
         rowCount: rows.length,
         columnCount: columns.length,
       },
@@ -55,7 +55,7 @@ async function parsePDF(buffer: Buffer, fileName: string): Promise<ParsedData> {
     rows: lines.map(line => [line]),
     metadata: {
       fileName,
-      fileType: 'application/pdf',
+      fileType: 'pdf',
       rowCount: lines.length,
       columnCount: 1,
     },
@@ -86,7 +86,7 @@ async function parseDOCX(buffer: Buffer, fileName: string): Promise<ParsedData> 
         ),
         metadata: {
           fileName,
-          fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          fileType: 'docx',
           rowCount: lines.length - 1,
           columnCount: possibleColumns.length,
         },
@@ -98,7 +98,7 @@ async function parseDOCX(buffer: Buffer, fileName: string): Promise<ParsedData> 
       rows: lines.map(line => [line]),
       metadata: {
         fileName,
-        fileType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        fileType: 'docx',
         rowCount: lines.length,
         columnCount: 1,
       },

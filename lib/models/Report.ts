@@ -40,7 +40,6 @@ const ReportSchema: Schema = new Schema(
     fileType: {
       type: String,
       required: true,
-      enum: ['xlsx', 'xls', 'csv', 'pdf', 'docx'],
     },
     data: {
       type: Schema.Types.Mixed,
@@ -64,12 +63,9 @@ const ReportSchema: Schema = new Schema(
     charts: [{
       type: {
         type: String,
-        enum: ['bar', 'line', 'pie', 'area', 'radar'],
-        required: true,
       },
       data: {
         type: Schema.Types.Mixed,
-        required: true,
       },
       config: {
         type: Schema.Types.Mixed,
@@ -83,6 +79,10 @@ const ReportSchema: Schema = new Schema(
 
 // Index for faster queries
 ReportSchema.index({ userId: 1, createdAt: -1 });
+
+if (mongoose.models && mongoose.models.Report) {
+  delete (mongoose.models as any).Report;
+}
 
 const Report: Model<IReport> = mongoose.models.Report || mongoose.model<IReport>('Report', ReportSchema);
 

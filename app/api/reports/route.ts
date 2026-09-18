@@ -28,19 +28,41 @@ export async function GET(request: NextRequest) {
   }
 }
 
+function normalizeFileType(type: string = '', name: string = ''): string {
+  const ext = name.split('.').pop()?.toLowerCase() || '';
+  if (['xlsx', 'xls', 'csv', 'pdf', 'docx'].includes(ext)) return ext;
+  const lower = type.toLowerCase();
+  if (lower.includes('spreadsheet') || lower.includes('xlsx')) return 'xlsx';
+  if (lower.includes('excel') || lower.includes('xls')) return 'xls';
+  if (lower.includes('csv')) return 'csv';
+  if (lower.includes('pdf')) return 'pdf';
+  if (lower.includes('word') || lower.includes('docx')) return 'docx';
+  return ext || 'csv';
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { title, fileName, fileType, data, insights, charts } = body;
+    let { title, fileName, fileType, data, insights, charts } = body;
 
-    if (!title || !fileName || !fileType || !data || !insights) {
+    if (!fileName) {
+      fileName = data?.metadata?.fileName || 'uploaded-file';
+    }
+
+    if (!title) {
+      title = fileName || 'Untitled Report';
+    }
+
+    fileType = normalizeFileType(fileType || data?.metadata?.fileType, fileName);
+
+    if (!data || !insights) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required report data or insights' },
         { status: 400 }
       );
     }
@@ -49,19 +71,19 @@ export async function POST(request: NextRequest) {
 
     const report = await Report.create({
       userId: session.user.id,
-      title,
+      title: title.trim(),
       fileName,
       fileType,
       data,
       insights,
-      charts: charts || [],
+      charts: Array.isArray(charts) ? charts : [],
     });
 
     return NextResponse.json(report, { status: 201 });
   } catch (error: any) {
     console.error('Error creating report:', error);
     return NextResponse.json(
-      { error: error.message || 'An error occurred' },
+      { error: error.message || 'An error occurred while saving report' },
       { status: 500 }
     );
   }

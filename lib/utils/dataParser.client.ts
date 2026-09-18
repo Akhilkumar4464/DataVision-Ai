@@ -29,7 +29,7 @@ export async function parseExcel(file: File): Promise<ParsedData> {
     rows,
     metadata: {
       fileName: file.name,
-      fileType: file.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      fileType: file.name.endsWith('.xls') ? 'xls' : 'xlsx',
       rowCount: rows.length,
       columnCount: columns.length,
     },
@@ -82,7 +82,7 @@ export async function parseCSV(file: File): Promise<ParsedData> {
           rows: dataRows,
           metadata: {
             fileName: file.name,
-            fileType: 'text/csv',
+            fileType: 'csv',
             rowCount: dataRows.length,
             columnCount: columns.length,
           },
